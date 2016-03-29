@@ -25,8 +25,10 @@
                atomic.AddInt64(&ops,1)
               }}()}
     时Sleep(时Second)
+    opsFinal:=atomic.LoadInt64(&ops)
+    形Println("ops:",opsFinal)
+
     让range:="abc" //when used with 让, Go keywords like "range" can be used as identifiers
     让range="abcdefg"
-    opsFinal:=atomic.LoadInt64(&ops)
-    形Println("ops:",opsFinal)}
-
+	形Printf("range: %v\n",range)
+}

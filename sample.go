@@ -54,8 +54,10 @@ func main() {
 		}()
 	}
 	time.Sleep(time.Second)
-	_range := "abc"
-	_range = "abcdefg"
 	_opsFinal := _atomic.LoadInt64(&_ops)
 	fmt.Println("ops:", _opsFinal)
+
+	_range := "abc" //when used with 让, Go keywords like "range" can be used as identifiers
+	_range = "abcdefg"
+	fmt.Printf("range: %v\n", _range)
 }
