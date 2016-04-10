@@ -1,0 +1,336 @@
+包正 //包 is shorthand Kanji for `package`; 正 is short for `main`
+入"errors" //入 is short for `import`
+久s串="constant" //久 short for `const`
+功正(){ //功 short for `func`
+
+  //Go by Example: Hello world
+  //形 is short for `fmt.` which is automatically imported when used
+  形Println("你好,世界")
+
+  //Go by Example: Values
+  形Println("go"+"lang") //Canonical "spaceless" Qu style: no spaces within statements and expressions
+  形Println("1+1 =",1+1)
+  形Println("7.0/3.0 =",7.0/3.0)
+  形Println(真&&假) //真 for `true`; 假 for `false`
+  形Println(真||假)
+  形Println(!真)
+
+  //Go by Example: Variables
+  做{ //optionally, begin standalone block with `做`
+    变a串= "initial";形Println(a) //变 for `variable`; 串 for `string`
+    变b,c整=1,2;形Println(b, c) //整 for `int`
+    变d=真;形Println(d)
+    变e整;形Println(e)
+    f:="short";形Println(f)
+    //canonical Qu style: join stmts on one line with semicolons if they're written
+    //as separate lines between blank lines in corresponding Go style
+  }
+
+  //Go by Example: Constants
+  做{
+    形Println(s)
+    久n=500000000
+    久d=3e20/n;形Println(d)
+    形Println(整64(d)) //整64 for `int64`
+    形Println(数Sin(n)) //数 for package `math`
+  }
+
+  //Go by Example: For
+  { i:=1
+    为i<=3{ //为 for `for`
+      形Println(i)
+      i=i+1
+    }
+    为j:=7;j<=9;j++{
+      形Println(j)
+    }
+    为{
+      形Println("loop")
+      破 //破 for `break`
+    }
+  }
+
+  //Go by Example: If/Else
+  { 如7%2==0{ //如 for `if`
+      形Println("7 is even")
+    }否{ //否 for `else`
+      形Println("7 is odd")
+    }
+    如8%4==0{
+      形Println("8 is divisible by 4")
+    }
+    如num:=9;num<0{
+      形Println(num,"is negative")
+    }否如num<10{
+      形Println(num,"has 1 digit")
+    }否{
+      形Println(num,"has multiple digits")
+    }
+  }
+
+  //Go by Example: Switch
+  { i:=2
+    形Print("write ",i," as ")
+    择i{ //择 for `switch`
+      事1:形Println("one") //事 for `case`
+      事2:形Println("two")
+      事3:形Println("three")
+    }
+
+    择时Now().Weekday(){ //时 for package `time`
+      事时Saturday,时Sunday:形Println("it's the weekend")
+      别:形Println("it's a weekday") //别 for `default`
+    }
+
+    t:=时Now()
+    择{
+      事t.Hour()<12:形Println("it's before noon")
+      别:形Println("it's after noon")
+    }
+  }
+
+  //Go by Example: Arrays
+  { 变a[5]整;形Println("emp:",a)
+    a[4]=100;形Println("set:",a);形Println("get:",a[4])
+    形Println("len:",度(a)) //度 for `len`
+    b:=[5]整{1,2,3,4,5};形Println("dcl:",b)
+
+    变twoD[2][3]整; //BUG: semi needed here to compile
+    为i:=0;i<2;i++{
+      为j:=0;j<3;j++{
+        twoD[i][j]=i+j
+      }
+    }
+    形Println("2d: ",twoD)
+  }
+
+  //Go by Example: Slices
+  { s:=造([]串,3);形Println("emp:",s) //造 for `make`
+    s[0]="a";s[1]="b";s[2]="c";形Println("set:",s);形Println("get:",s[2])
+    形Println("len:",度(s))
+    s=加(s,"d");s=加(s,"e","f");形Println("apd:",s) //加 for `append`
+    c:=造([]串,度(s));副(c,s);形Println("cpy:",c) //副 for `copy`
+    l:=s[2:5];形Println("sl1:",l)
+    l=s[:5];形Println("sl2:",l)
+    l=s[2:];形Println("sl3:",l)
+    t:=[]串{"g","h","i"};形Println("dcl:",t)
+
+    twoD:=造([][]整,3)
+    为i:=0;i<3;i++{
+      innerLen:=i+1
+      twoD[i]=造([]整,innerLen)
+      为j:=0;j<innerLen;j++{
+        twoD[i][j]=i+j
+      }
+    }
+    形Println("2d: ",twoD)
+  }
+
+  //Go by Examples: Maps
+  { m:=造(图[串]整) //图 for `map`
+    m["k1"]=7;m["k2"]=13
+    形Println("map:",m)
+    v1:=m["k1"];形Println("v1: ",v1)
+    形Println("len:",度(m))
+
+    删(m,"k2") //形 for `delete`
+    形Println("map:",m)
+
+    _,prs:=m["k2"];形Println("prs:", prs)
+    n:=图[串]整{"foo":1,"bar":2};形Println("map:",n)
+  }
+
+  //Go by Examples: Range
+  { nums:=[]整{2,3,4}
+    sum:=0
+    为_,num:=围nums{ //围 for `range`
+      sum+=num
+    }
+    形Println("sum:",sum)
+
+    为i,num:=围nums{
+      如num==3{
+        形Println("index:",i)
+      }
+    }
+
+    kvs:=图[串]串{"a":"apple","b":"banana"}
+    为k,v:=围kvs{
+      形Printf("%s -> %s\n",k,v)
+    }
+
+    为i,c:=围"go"{
+      形Println(i,c)
+    }
+  }
+
+  //Go by Example: Functions (a) //for rest of example, see (b) at bottom
+  { res:=plus(1,2)
+    形Println("1+2 =",res)
+    res=plusPlus(1,2,3)
+    形Println("1+2+3 =",res)
+  }
+
+  //Go by Example: Multiple Return Values (a)
+  { a,b:=vals();形Println(a);形Println(b)
+    _,c:=vals();形Println(c)
+  }
+
+  //Go by Example: Variadic Functions (a)
+  { sum(1,2);sum(1,2,3)
+    nums:=[]整{1,2,3,4};sum(nums...)
+  }
+
+  //Go by Example: Closures (a)
+  { nextInt:=intSeq();形Println(nextInt());形Println(nextInt());形Println(nextInt())
+    newInts:=intSeq();形Println(newInts())
+  }
+
+  //Go by Example: Recursion (a)
+  形Println(fact(7))
+
+  //Go by Example: Pointers (a)
+  { i:=1;形Println("initial:",i)
+    zeroval(i);形Println("zeroval:",i)
+    zeroptr(&i);形Println("zeroptr:",i)
+    形Println("pointer:",&i)
+  }
+
+  //Go by Example: Structs (a)
+  { 形Println(person{"Bob",20})
+    形Println(person{name:"Alice",age:30})
+    形Println(person{name:"Fred"})
+    形Println(&person{name:"Ann",age:40})
+    s:=person{name:"Sean",age:50};形Println(s.name)
+    sp:=&s;形Println(sp.age)
+    sp.age=51;形Println(sp.age)
+  }
+
+  //Go by Example: Methods (a)
+  { r:=rect{width:10,height:5}
+    形Println("area: ",r.area());形Println("perim:",r.perim())
+    rp:=&r
+    形Println("area: ",rp.area());形Println("perim:",rp.perim())
+  }
+
+  //Go by Example: Interfaces (a)
+  { r:=rectle{width:3,height:4};c:=circle{radius:5}
+    measure(r);measure(c)
+  }
+
+  //Go by Example: Errors (a)
+  { 为_,i:=围[]整{7,42}{
+      如r,e:=f1(i);e!=空{ //空 for `nil`
+        形Println("f1 failed:",e)
+      }否{
+        形Println("f1 worked:",r)
+      }
+    }
+    为_,i:=围[]整{7,42}{
+      如r,e:=f2(i);e!=空{
+        形Println("f2 failed:",e)
+      }否{
+        形Println("f2 worked:",r)
+      }
+    }
+    _,e:=f2(42)
+    如ae,ok:=e.(*argError);ok{
+      形Println(ae.arg)
+      形Println(ae.prob)
+    }
+  }
+}
+
+//Go by Example: Functions (b)
+功plus(a整,b整)整{回a+b} //回 for `return`
+功plusPlus(a,b,c整)整{回a+b+c}
+
+//Go by Example: Multiple Return Values (b)
+功vals()(整,整){回3,7}
+
+//Go by Example: Variadic Functions (b)
+功sum(nums...整){
+  形Print(nums," ")
+  total:=0
+  为_,num:=围nums{
+    total+=num
+  }
+  形Println(total)
+}
+
+//Go by Example: Closures (b)
+功intSeq()功()整{
+  i:=0
+  回功()整{i+=1;回i}
+}
+
+//Go by Example: Recursion (b)
+功fact(n整)整{
+  如n==0{回1}
+  回n*fact(n-1)
+}
+
+//Go by Example: Pointers (b)
+功zeroval(ival整){ival=0}
+功zeroptr(iptr*整){*iptr=0}
+
+//Go by Examples: Structs (b)
+种person构{ //种 is `type`; 构 is `struct`
+  name串
+  age整
+}
+
+//Go by Examples: Methods (b)
+种rect构{width,height整}
+功(r*rect)area()整{回r.width*r.height}
+功(r rect)perim()整{ //space in `r rect` can't be eliminated for now
+  回2*r.width+2*r.height
+}
+
+//Go by Examples: Interfaces (b)
+种geometry面{ //面 for `interface`
+  area()漂64; //漂64 for `float64` //BUG: semi needed here to compile
+  perim()漂64
+}
+
+种rectle构{width,height漂64}
+种circle构{radius漂64}
+
+功(r rectle)area()漂64{回r.width*r.height}
+功(r rectle)perim()漂64{回2*r.width+2*r.height}
+
+功(c circle)area()漂64{回数Pi*c.radius*c.radius}
+功(c circle)perim()漂64{回2*数Pi*c.radius}
+
+功measure(g geometry) {
+  形Println(g)
+  形Println(g.area())
+  形Println(g.perim())
+}
+
+//Go by Example: Errors (b)
+功f1(arg整)(整,错){
+  如arg==42{
+    回-1,errors.New("can't work with 42")
+  }
+  回arg+3,空
+}
+
+种argError构{
+  arg整;
+  prob串
+}
+
+功(e*argError)Error()串{
+  回形Sprintf("%d - %s",e.arg,e.prob)
+}
+
+功f2(arg整)(整,错){
+  如arg==42{
+    回-1,&argError{arg,"can't work with it"}
+  }
+  回arg+3,空
+}
+
+
+

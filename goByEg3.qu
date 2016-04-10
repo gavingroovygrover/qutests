@@ -1,0 +1,328 @@
+package正
+入("os";"strings";s"strings";"bytes";"regexp"
+   "encoding/json";"math/rand";"strconv";"net/url"
+   "crypto/sha1")
+import"strings"
+功正(){
+
+  //Go by Example: Sorting
+  { strs:=[]串{"c","a","b"}
+    序Strings(strs)
+    形Println("Strings:",strs)
+
+    ints:=[]整{7,2,4}
+    序Ints(ints)
+    形Println("Ints:   ",ints)
+
+    s:=序IntsAreSorted(ints)
+    形Println("Sorted: ",s)
+  }
+
+  //Go by Example: Sorting by Functions (a)
+  { fruits:=[]串{"peach","banana","kiwi"}
+    序Sort(ByLength(fruits))
+    形Println(fruits)
+  }
+
+  //Go by Example: Panic
+  { //丢("a problem") //throws actual panic
+    让_,err:=os.Create("tmp/file") //changed from /tmp/defer.txt //让 for assignments, etc
+    如err!=空{丢(err)}
+  }
+
+  //Go by Example: Defer (a)
+  { f:=createFile("tmp/defer.txt") //changed from /tmp/defer.txt
+    终closeFile(f)
+    writeFile(f)
+  }
+
+  //Go by Example: Collection Functions (a)
+  { 变strs=[]串{"peach","apple","pear","plum"}
+    形Println(Index(strs,"pear"))
+    形Println(Include(strs,"grape"))
+    形Println(Any(strs,功(v串)双{
+      回strings.HasPrefix(v,"p")
+    }))
+    形Println(All(strs,功(v串)双{
+      回strings.HasPrefix(v,"p")
+    }))
+    形Println(Filter(strs,功(v串)双{
+      回strings.Contains(v,"e")
+    }))
+    形Println(Map(strs,strings.ToUpper))
+  }
+  英{ //unchanged version within 英...
+    var strs = []string{"peach", "apple", "pear", "plum"}
+    fmt.Println(Index(strs, "pear"))
+    fmt.Println(Include(strs, "grape"))
+    fmt.Println(Any(strs, func(v string) bool {
+        return strings.HasPrefix(v, "p")
+    }))
+    fmt.Println(All(strs, func(v string) bool {
+        return strings.HasPrefix(v, "p")
+    }))
+    fmt.Println(Filter(strs, func(v string) bool {
+        return strings.Contains(v, "e")
+    }))
+    fmt.Println(Map(strs, strings.ToUpper))
+  }
+
+  //Go by Example: String Functions
+  { 变p=形Println
+    p("Contains:  ",s.Contains("test","es"))
+    p("Count:     ",s.Count("test","t"))
+    p("HasPrefix: ",s.HasPrefix("test","te"))
+    p("HasSuffix: ",s.HasSuffix("test","st"))
+    p("Index:     ",s.Index("test","e"))
+    p("Join:      ",s.Join([]串{"a","b"},"-"))
+    p("Repeat:    ",s.Repeat("a",5))
+    p("Replace:   ",s.Replace("foo","o","0",-1))
+    p("Replace:   ",s.Replace("foo","o","0",1))
+    p("Split:     ",s.Split("a-b-c-d-e","-"))
+    p("ToLower:   ",s.ToLower("TEST"))
+    p("ToUpper:   ",s.ToUpper("test"))
+    p()
+    p("Len: ",度("hello"))
+    p("Char:","hello"[1])
+  }
+
+  //Go by Example: String Formatting (a)
+  { p:=point{1,2}
+    形Printf("%v\n",p)
+    形Printf("%+v\n",p)
+    形Printf("%#v\n",p)
+    形Printf("%T\n",p)
+    形Printf("%t\n",真)
+    形Printf("%d\n",123)
+    形Printf("%b\n",14)
+    形Printf("%c\n",33)
+    形Printf("%x\n",456)
+    形Printf("%f\n",78.9)
+    形Printf("%e\n",123400000.0);形Printf("%E\n",123400000.0)
+    形Printf("%s\n","\"string\"")
+    形Printf("%q\n","\"string\"")
+    形Printf("%x\n","hex this")
+    形Printf("%p\n",&p)
+    形Printf("|%6d|%6d|\n",12,345)
+    形Printf("|%6.2f|%6.2f|\n",1.2,3.45)
+    形Printf("|%-6.2f|%-6.2f|\n",1.2,3.45)
+    形Printf("|%6s|%6s|\n","foo","b")
+    形Printf("|%-6s|%-6s|\n","foo","b")
+    s:=形Sprintf("a %s","string");形Println(s)
+    形Fprintf(os.Stderr,"an %s\n","error")
+  }
+
+  //Go by Example: Regular Expressions
+  { match,_:=regexp.MatchString("p([a-z]+)ch","peach");形Println(match)
+    r,_:=regexp.Compile("p([a-z]+)ch")
+    形Println(r.MatchString("peach"))
+    形Println(r.FindString("peach punch"))
+    形Println(r.FindStringIndex("peach punch"))
+    形Println(r.FindStringSubmatch("peach punch"))
+    形Println(r.FindStringSubmatchIndex("peach punch"))
+    形Println(r.FindAllString("peach punch pinch",-1))
+    形Println(r.FindAllStringSubmatchIndex("peach punch pinch",-1))
+    形Println(r.FindAllString("peach punch pinch",2))
+    形Println(r.Match([]节("peach")))
+    r=regexp.MustCompile("p([a-z]+)ch");形Println(r)
+    形Println(r.ReplaceAllString("a peach","<fruit>"))
+    in:=[]节("a peach")
+    out:=r.ReplaceAllFunc(in,bytes.ToUpper)
+    形Println(串(out))
+  }
+
+  //Go by Example: JSON (a)
+  { bolB,_:=json.Marshal(真);形Println(串(bolB))
+    intB,_:=json.Marshal(1);形Println(串(intB))
+    fltB,_:=json.Marshal(2.34);形Println(串(fltB))
+    strB,_:=json.Marshal("gopher");形Println(串(strB))
+
+    slcD:=[]串{"apple","peach","pear"}
+    slcB,_:=json.Marshal(slcD)
+    形Println(串(slcB))
+    mapD:=图[串]整{"apple":5,"lettuce":7}
+    mapB,_:=json.Marshal(mapD)
+    形Println(串(mapB))
+
+    res1D:=&Response1{
+      Page:1,
+      Fruits:[]串{"apple","peach","pear"}}
+    res1B,_:=json.Marshal(res1D)
+    形Println(串(res1B))
+
+    res2D:=&Response2{
+      Page:1,
+      Fruits:[]串{"apple","peach","pear"}}
+    res2B,_:=json.Marshal(res2D)
+    形Println(串(res2B))
+
+    byt:=[]节(`{"num":6.13,"strs":["a","b"]}`)
+    变dat图[串]面{}
+    如err:=json.Unmarshal(byt,&dat);err!=空{
+      丢(err)
+    };形Println(dat)
+    num:=dat["num"].(漂64);形Println(num)
+    strs:=dat["strs"].([]任);str1:=strs[0].(串);形Println(str1)
+
+    str:=`{"page": 1, "fruits": ["apple", "peach"]}`
+    res:=Response2{}
+    json.Unmarshal([]节(str),&res)
+    形Println(res);形Println(res.Fruits[0])
+
+    enc:=json.NewEncoder(os.Stdout)
+    d:=图[串]整{"apple":5,"lettuce":7}
+    enc.Encode(d)
+  }
+
+  //Go by Example: Time
+  { p:=形Println
+    now:=时Now();p(now)
+    then:=时Date(2009,11,17,20,34,58,651387237,时UTC);p(then)
+
+    p(then.Year());p(then.Month());p(then.Day())
+    p(then.Hour());p(then.Minute());p(then.Second());p(then.Nanosecond())
+    p(then.Location())
+    p(then.Weekday())
+    p(then.Before(now));p(then.After(now));p(then.Equal(now))
+    diff:=now.Sub(then);p(diff)
+    p(diff.Hours());p(diff.Minutes());p(diff.Seconds());p(diff.Nanoseconds())
+    p(then.Add(diff));p(then.Add(-diff))
+  }
+
+  //Go by Example: Epoch
+  { now:=时Now();secs:=now.Unix();nanos:=now.UnixNano();形Println(now)
+    millis:=nanos/1000000;形Println(secs);形Println(millis);形Println(nanos)
+    形Println(时Unix(secs,0));形Println(时Unix(0,nanos))
+  }
+
+  //Go by Example: Time Formatting / Parsing
+  { p:=形Println
+    t:=时Now();p(t.Format(时RFC3339))
+    t1,e:=时Parse(时RFC3339,"2012-11-01T22:08:41+00:00");p(t1)
+    p(t.Format("3:04PM"))
+    p(t.Format("Mon Jan _2 15:04:05 2006"))
+    p(t.Format("2006-01-02T15:04:05.999999-07:00"))
+    form:="3 04 PM";t2,e:=时Parse(form,"8 41 PM");p(t2)
+    形Printf("%d-%02d-%02dT%02d:%02d:%02d-00:00\n",
+      t.Year(),t.Month(),t.Day(),t.Hour(),t.Minute(),t.Second())
+    ansic:="Mon Jan _2 15:04:05 2006";_,e=时Parse(ansic,"8:41PM");p(e)
+  }
+
+  //Go by Example: Random Numbers
+  { 形Print(rand.Intn(100),",");形Print(rand.Intn(100));形Println()
+    形Println(rand.Float64())
+    形Print((rand.Float64()*5)+5,",");形Print((rand.Float64()*5)+5);形Println()
+    s1:=rand.NewSource(时Now().UnixNano());r1:=rand.New(s1)
+    形Print(r1.Intn(100),",");形Print(r1.Intn(100));形Println()
+
+    s2:=rand.NewSource(42)
+    r2:=rand.New(s2)
+    形Print(r2.Intn(100),",");形Print(r2.Intn(100));形Println()
+    s3:=rand.NewSource(42)
+    r3:=rand.New(s3)
+    形Print(r3.Intn(100),",");形Print(r3.Intn(100))
+  }
+
+  //Go by Example: Number Parsing
+  { f,_:=strconv.ParseFloat("1.234",64);形Println(f)
+    i,_:=strconv.ParseInt("123",0,64);形Println(i)
+    d,_:=strconv.ParseInt("0x1c8",0,64);形Println(d)
+    u,_:=strconv.ParseUint("789",0,64);形Println(u)
+    k,_:=strconv.Atoi("135");形Println(k)
+    _,e:=strconv.Atoi("wat");形Println(e)
+  }
+
+  //Go by Example: URL Parsing
+  { s:="postgres://user:pass@host.com:5432/path?k=v#f"
+    u,err:=url.Parse(s);如err!=空{丢(err)}
+    形Println(u.Scheme)
+    形Println(u.User)
+    形Println(u.User.Username())
+    p,_:=u.User.Password();形Println(p)
+    形Println(u.Host)
+    host,port,_:=网SplitHostPort(u.Host);形Println(host);形Println(port)
+    形Println(u.Path)
+    形Println(u.Fragment)
+    形Println(u.RawQuery)
+    m,_:=url.ParseQuery(u.RawQuery);形Println(m);形Println(m["k"][0])
+  }
+
+  //Go by Example: SHA1 Hashes
+  { s:="sha1 this string"
+    h:=sha1.New()
+    h.Write([]节(s))
+    bs:=h.Sum(空)
+    形Println(s);形Printf("%x\n", bs)
+  }
+
+
+
+}
+
+//Go by Example: Sorting by Functions (b)
+种ByLength[]串
+功(s ByLength)Len()整{回度(s)}
+功(s ByLength)Swap(i,j整){s[i],s[j]=s[j],s[i]}
+功(s ByLength)Less(i,j整)双{回度(s[i])<度(s[j])}
+
+//Go by Example: Defer (b)
+功createFile(p串)*os.File{
+  形Println("creating")
+  f,err:=os.Create(p)
+  如err!=空{
+    丢(err)
+  }
+  回f
+}
+功writeFile(f*os.File){
+  形Println("writing")
+  形Fprintln(f,"data")
+}
+功closeFile(f*os.File){
+  形Println("closing")
+  f.Close()
+}
+
+//Go by Example: Collection Functions (b)
+func Index(vs []string, t string) int { //we can leave function defn unchanged and everything still just works
+    for i, v := range vs {
+        if v == t {
+            return i
+        }
+    }
+    return -1
+}
+
+功Include(vs[]串,t串)双{回Index(vs,t)>=0}
+
+功Any(vs[]串,f功(串)双)双{
+  为_,v:=围vs{如f(v){回真}}
+  回假
+}
+功All(vs[]串,f功(串)双)双{
+  为_,v:=围vs{如!f(v){回假}}
+  回真
+}
+功Filter(vs[]串,f功(串)双)[]串{
+  vsf:=造([]串,0)
+  为_,v:=围vs{如f(v){vsf=加(vsf, v)}}
+  回vsf
+}
+功Map(vs[]串,f功(串)串)[]串{
+  vsm:=造([]串,度(vs))
+  为i,v:=围vs{vsm[i]=f(v)}
+  回vsm
+}
+
+//Go by Example: String Formatting (b)
+种point构{x,y整}
+
+
+//Go by Example: JSON (b)
+种Response1构{Page整;Fruits[]串}
+种Response2构{
+  Page整`json:"page"`
+  Fruits[]串`json:"fruits"`
+}
+
+

@@ -1,0 +1,64 @@
+package正
+入(b64"encoding/base64";"io/ioutil"
+"bufio";"io";"io/ioutil";"os"
+)
+功正(){
+
+  //Go by Example: Base64 Encoding
+  { data:="abc123!?$*&()'-=@~"
+    sEnc:=b64.StdEncoding.EncodeToString([]节(data))
+    形Println(sEnc)
+
+    sDec,_:=b64.StdEncoding.DecodeString(sEnc)
+    形Println(串(sDec))
+    形Println()
+
+    uEnc:=b64.URLEncoding.EncodeToString([]节(data))
+    形Println(uEnc)
+    uDec,_:=b64.URLEncoding.DecodeString(uEnc)
+    形Println(串(uDec))
+  }
+
+  //Go by Example: Reading Files (a)
+  { dat,err:=ioutil.ReadFile("tmp/dat");check(err);形Print(串(dat))
+    f,err:=os.Open("tmp/dat");check(err)
+    b1:=造([]节,5)
+    n1,err:=f.Read(b1);check(err);形Printf("%d bytes: %s\n",n1,串(b1))
+    o2,err:=f.Seek(6,0);check(err)
+    b2:=造([]节,2)
+    n2,err:=f.Read(b2);check(err);形Printf("%d bytes @ %d: %s\n",n2,o2,串(b2))
+    o3,err:=f.Seek(6,0);check(err)
+    b3:=造([]节,2)
+    n3,err:=io.ReadAtLeast(f,b3,2);check(err);形Printf("%d bytes @ %d: %s\n",n3,o3,串(b3))
+    _,err=f.Seek(0,0);check(err)
+    r4:=bufio.NewReader(f)
+    b4,err:=r4.Peek(5);check(err);形Printf("5 bytes: %s\n",串(b4))
+    f.Close()
+  }
+
+  //Go by Example: Writing Files (a)
+  { d1:=[]节("hello\ngo\n")
+    err:=ioutil.WriteFile("tmp/dat1",d1,0644);check(err)
+    f,err:=os.Create("tmp/dat2");check(err)
+    终f.Close()
+    d2:=[]节{115,111,109,101,10}
+    n2,err:=f.Write(d2);check(err);形Printf("wrote %d bytes\n",n2)
+    n3,err:=f.WriteString("writes\n");形Printf("wrote %d bytes\n", n3)
+    f.Sync()
+    w:=bufio.NewWriter(f)
+    n4,err:=w.WriteString("buffered\n");形Printf("wrote %d bytes\n", n4)
+    w.Flush()
+  }
+
+
+
+}
+
+//Go by Example: Reading Files (b); Writing Files (b)
+功check(e错){
+  如e!=空{
+    丢(e)
+  }
+}
+
+

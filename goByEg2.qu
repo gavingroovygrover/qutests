@@ -1,0 +1,342 @@
+包正
+入("math/rand";"sync";"sync/atomic";"runtime")
+功正(){
+
+  //Go by Example: Goroutines (a)
+  { f("direct")
+    去f("goroutine")
+    去功(msg串){形Println(msg)}("going -- press enter...")
+    变input串
+    形Scanln(&input)
+    形Println("done")
+  }
+
+  //Go by Example: Channels
+  { messages:=造(通串)
+    去功(){messages<-"ping"}()
+    msg:=<-messages;形Println(msg)
+  }
+
+  //Go by Example: Channel Buffering
+  { messages:=造(通串,2)
+    messages<-"buffered";messages<-"channel"
+    形Println(<-messages);形Println(<-messages)
+  }
+
+  //Go by Example: Channel Synchronization (a)
+  { done:=造(通双,1);去worker(done)
+    <-done
+  }
+
+  //Go by Example: Channel Directions (a)
+  { pings:=造(通串,1)
+    pongs:=造(通串,1)
+    ping(pings,"passed message")
+    pong(pings,pongs)
+    形Println(<-pongs)
+  }
+
+  //Go by Example: Select
+  { c1:=造(通串);c2:=造(通串)
+    去功(){
+      时Sleep(时Second*1)
+      c1<-"one"
+    }()
+    去功(){
+      时Sleep(时Second*2)
+      c2<-"two"
+    }()
+    为i:=0;i<2;i++{
+      选{
+      事msg1:=<-c1:
+        形Println("received",msg1)
+      事msg2:=<-c2:
+        形Println("received",msg2)
+      }
+    }
+  }
+
+  //Go by Example: Timeouts
+  { c1:=造(通串,1)
+    去功(){
+      时Sleep(时Second*2)
+      c1<-"result 1"
+    }()
+    选{
+    事res:=<-c1:
+      形Println(res)
+    事<-时After(时Second*1):
+      形Println("timeout 1")
+    }
+
+    c2:=造(通串,1)
+    去功(){
+      时Sleep(时Second*2)
+        c2<-"result 2"
+    }()
+    选{
+    事res:=<-c2:
+      形Println(res)
+    事<-时After(时Second*3):
+      形Println("timeout 2")
+    }
+  }
+
+  //Go by Example: Non-blocking Channel Operations
+  { messages:=造(通串)
+    signals:=造(通串)
+    选{
+    事msg:=<-messages:
+      形Println("received message",msg)
+    别:
+      形Println("no message received")
+    }
+
+    msg:="hi"
+    选{
+    事messages<-msg:
+      形Println("sent message",msg)
+    别:
+      形Println("no message sent")
+    }
+
+    选{
+    事msg:=<-messages:
+      形Println("received message",msg)
+    事sig:=<-signals:
+      形Println("received signal",sig)
+    别:
+      形Println("no activity")
+    }
+  }
+
+  //Go by Example: Closing Channels
+  { jobs:=造(通整,5)
+    done:=造(通双)
+    去功(){
+      为{
+        j,more:=<-jobs
+        如more{
+          形Println("received job",j)
+        }否{
+          形Println("received all jobs")
+          done<-真
+          回
+        }
+      }
+    }()
+
+    为j:=1;j<=3;j++{
+      jobs<-j
+      形Println("sent job",j)
+    }
+    关(jobs)
+    形Println("sent all jobs")
+    <-done
+  }
+
+  //Go by Example: Range over Channels
+  { queue:=造(通串,2)
+    queue<-"one";queue<-"two"
+    关(queue)
+    为elem:=围queue{
+      形Println(elem)
+    }
+  }
+
+  //Go by Example: Timers
+  { timer1:=时NewTimer(时Second*2)
+    <-timer1.C
+    形Println("Timer 1 expired")
+
+    timer2:=时NewTimer(时Second)
+    去功(){
+      <-timer2.C
+      形Println("Timer 2 expired")
+    }()
+
+    stop2:=timer2.Stop()
+    如stop2{
+      形Println("Timer 2 stopped")
+    }
+  }
+
+  //Go by Example: Tickers
+  { ticker:=时NewTicker(时Millisecond*500)
+    去功(){
+      为t:=围ticker.C{
+        形Println("Tick at",t)
+      }
+    }()
+    时Sleep(时Millisecond*1600)
+    ticker.Stop()
+    形Println("Ticker stopped")
+  }
+
+  //Go by Example: Worker Pools (a)
+  { jobs:=造(通整,100)
+    results:=造(通整,100)
+    为w:=1;w<=3;w++{
+      去workerer(w,jobs,results)
+    }
+    为j:=1;j<=9;j++{
+      jobs<-j
+    }
+    关(jobs)
+    为a:=1;a<=9;a++{
+      <-results
+    }
+  }
+
+  //Go by Example: Rate Limiting
+  { requests:=造(通整,5)
+    为i:=1;i<=5;i++{
+      requests<-i
+    }
+    关(requests)
+
+    limiter:=时Tick(时Millisecond*200)
+    为req:=围requests{
+      <-limiter
+      形Println("request",req,时Now())
+    }
+
+    burstyLimiter:=造(通时Time,3)
+    为i:=0;i<3;i++{
+      burstyLimiter<-时Now()
+    }
+
+    去功(){
+      为t:=围时Tick(时Millisecond*200){
+        burstyLimiter<-t
+      }
+    }()
+
+    burstyRequests:=造(通整,5)
+    为i:=1;i<=5;i++{
+      burstyRequests<-i
+    }
+    关(burstyRequests)
+    为req:=围burstyRequests{
+      <-burstyLimiter
+      形Println("request",req,时Now())
+    }
+  }
+
+  //Go by Example: Atomic Counters
+  { 变ops绝64=0
+    为i:=0;i<50;i++{
+      去功(){
+        为{atomic.AddUint64(&ops,1)
+           runtime.Gosched()
+        }
+      }()
+    }
+    时Sleep(时Second)
+    opsFinal:=atomic.LoadUint64(&ops)
+    形Println("ops:",opsFinal)
+  }
+
+  //Go by Example: Mutexes
+  { 变state=造(图[整]整)
+    变mutex=&sync.Mutex{}
+    变ops整64=0
+
+    为r:=0;r<100;r++{
+      去功(){
+        total:=0
+        为{
+          key:=rand.Intn(5)
+          mutex.Lock()
+          total+=state[key]
+          mutex.Unlock()
+          atomic.AddInt64(&ops,1)
+          runtime.Gosched()
+        }
+      }()
+    }
+
+    为w:=0;w<10;w++{
+      去功(){
+        为{
+          key:=rand.Intn(5)
+          val:=rand.Intn(100)
+          mutex.Lock()
+          state[key]=val
+          mutex.Unlock()
+          atomic.AddInt64(&ops,1)
+          runtime.Gosched()
+        }
+      }()
+    }
+
+    时Sleep(时Second)
+    opsFinal:=atomic.LoadInt64(&ops);形Println("ops:",opsFinal)
+    mutex.Lock();形Println("state:",state);mutex.Unlock()
+  }
+
+  //Go by Example: Stateful Goroutines (a)
+  { 变ops整64=0
+    reads:=造(通*readOp)
+    writes:=造(通*writeOp)
+    去功(){
+      变state=造(图[整]整)
+      为{选{事read:=<-reads:read.resp<-state[read.key]
+            事write:=<-writes:state[write.key]=write.val;write.resp<-真
+      }}
+    }()
+    为r:=0;r<100;r++{
+      去功(){
+        为{read:=&readOp{key:rand.Intn(5),resp:造(通整)}
+           reads<-read
+           <-read.resp
+           atomic.AddInt64(&ops,1)
+        }
+      }()
+    }
+    为w:=0;w<10;w++{
+      去功(){
+        为{write:=&writeOp{key:rand.Intn(5),val:rand.Intn(100),resp:造(通双)}
+           writes<-write
+           <-write.resp
+           atomic.AddInt64(&ops,1)
+        }
+      }()
+    }
+    时Sleep(时Second)
+    opsFinal:=atomic.LoadInt64(&ops)
+    形Println("ops:",opsFinal)
+  }
+}
+
+//Go by Example: Goroutines (b)
+功f(from串){
+  为i:=0;i<3;i++{
+    形Println(from,":",i)
+  }
+}
+
+//Go by Example: Channel Synchronization (b)
+功worker(done通双){
+  形Print("working...")
+  时Sleep(时Second);形Println("done")
+  done<-真
+}
+
+//Go by Example: Channel Directions (b)
+功ping(pings通<-串,msg串){pings<-msg}
+功pong(pings<-通串,pongs通<-串){msg:=<-pings;pongs<-msg}
+
+//Go by Example: Worker Pools (b)
+功workerer(id整,jobs<-通整,results通<-整){
+  为j:=围jobs{
+    形Println("worker",id,"processing job",j)
+    时Sleep(时Second)
+    results<-j*2
+  }
+}
+
+//Go by Example: Stateful Goroutines (b)
+种readOp构{key整;resp通整}
+种writeOp构{key整;val整;resp通双}
+
